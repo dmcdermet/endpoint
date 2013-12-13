@@ -24,6 +24,7 @@
 // - allow selection of protocol (TCP, SCTP, UDP)
 // - add GUI (such as ncurses) to make interface better
 //
+// Let's add some more information in here...
 //=============================================================================
 
 #include <stdio.h>
