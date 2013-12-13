@@ -30,6 +30,8 @@
 #define ACTION_TEST             ( 6 )   // specify: int count
 #define ACTION_SET_PRINT_FLAG   ( 7 )   // specify: int value
 #define ACTION_SHOW_CONNECTIONS ( 8 )   // specify: <none>
+#define ACTION_TRANSPORT        ( 9 )   // specify: int type
+#define ACTION_HOHOHO           ( 10 )  // specify: int address
 
 // function prototypes:
 void userio_init ( void );
