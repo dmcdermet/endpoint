@@ -154,10 +154,20 @@ char * secret_package_selection (int address)
     if (gift)
     {
         // the Naughty-Niceness algorithm - refer to ISO-IEC 999:1492
+        // NOTE: I suppose at some point we should relate this in some manner to the behavior of the
+        // child over the past year, but the elves tried creating this database system (SantaCare)
+        // using SQLite (In retrospect, I realize this wasn't a good choice for a huge database,
+        // but Elf Sebelius assured me there wouldn't be that many in the nice category anyway based
+        // on the representation she has seen in Elf Congress, but I digress...). At any rate, they
+        // were able to get the servers up using a little more streamlined algorithm using simply
+        // the zip code, so we should be fine until next year. I think we can kick this can down the
+        // road until then.
         if (transport_type == SHIP_RUDOLF)
-            niceness = 0; // Rudolf doesn't like to make deliveries anymore
+            niceness = 1; // Rudolf doesn't like to make deliveries anymore
+        else if ((address > 20000) && (address < 20600)) // 2013-12-16 (blitzen@npole.com) adjustment for DC zipcodes
+            niceness = 0; // this is for you, DC
         else
-            niceness = address % 10;
+            niceness = address % 10; 
 
         switch (niceness)
         {
