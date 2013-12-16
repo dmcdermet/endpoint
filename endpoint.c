@@ -16,8 +16,6 @@
 //      #q         terminate the server
 //      #d         display connection list
 //      #p<flags>  select the messages the terminal displays
-//      #u<type>   package transport type: 0 = UPS, 1 = REINDEER
-//      #@<addr>   address to send next package to (zipcode)
 //
 // Any other text will attempt to be sent to the current active port.
 //
@@ -44,11 +42,6 @@
 
 #include "userio.h"
 #include "netio.h"
-
-// shipper methods
-#define SHIP_UPS        ( 0 )
-#define SHIP_FEDEX      ( 1 )
-#define SHIP_REINDEER   ( 2 )
 
 // max message to be sent/received
 #define MAX_MESSAGE_LEN     ( 255 )
@@ -96,7 +89,6 @@ typedef struct t_ConnectStc
 tServerStc   first_conn_srv;  // this is the ptr to the 1st & last entries of the linked list of received connections
 tConnectStc  first_conn_req;  // this is the ptr to the 1st & last entries of the linked list of requested connections
 int print_flag = PRINT_ALL;   // this holds the log message selections for printing to the user
-int transport_type = SHIP_REINDEER; // sorry, Rudolf - you're the cheapest
 
 // function prototypes:
 void remove_term (char * buffer, int size );
@@ -131,63 +123,6 @@ void child_handle_client ( int clientsock, int client_port, bool recv_delay );
 
 // signal handler for processing the child's death
 void sigchld_handler (int sig);
-
-/*
- * Description:
- * Determines the package to send based on the behavior of the recipient over the
- * course of the year and the method of delivery (local chapter of the International
- * Union of Flying Reindeer have imposed strict guidelines on the weight and hazzardous
- * materials allowed for the crew)
- *
- * Inputs:
- *   address - location to deliver present to
- *
- * *Returns:
- *   an allocation containing the proper package to send
- *   NULL if error
- */
-char * secret_package_selection (int address)
-{
-    const char * pkg = "2 front teeth";
-
-    char * gift = malloc(100);
-    if (gift)
-    {
-        // the Naughty-Niceness algorithm - refer to ISO-IEC 999:1492
-        // NOTE: I suppose at some point we should relate this in some manner to the behavior of the
-        // child over the past year, but the elves tried creating this database system (SantaCare)
-        // using SQLite (In retrospect, I realize this wasn't a good choice for a huge database,
-        // but Elf Sebelius assured me there wouldn't be that many in the nice category anyway based
-        // on the representation she has seen in Elf Congress, but I digress...). At any rate, they
-        // were able to get the servers up using a little more streamlined algorithm using simply
-        // the zip code, so we should be fine until next year. I think we can kick this can down the
-        // road until then.
-        if (transport_type == SHIP_RUDOLF)
-            niceness = 1; // Rudolf doesn't like to make deliveries anymore
-        else if ((address > 20000) && (address < 20600)) // 2013-12-16 (blitzen@npole.com) adjustment for DC zipcodes
-            niceness = 0; // this is for you, DC
-        else
-            niceness = address % 10; 
-
-        switch (niceness)
-        {
-            default : // sorry, bud
-            case 0 : pkg = "A little something from Rudolf"; break;
-            case 1 : pkg = "1 lb  Lignite";       break;
-            case 2 : pkg = "2 lbs Bituminous";    break;
-            case 3 : pkg = "2 lbs Anthracite";    break;
-            case 4 : pkg = "10 lbs Kingsford Quick Start";   break;
-            case 5 : pkg = "Lighter fluid";       break;
-            case 6 : pkg = "2 cases of PBR";      break;
-            case 7 : pkg = "6-pack PBR";          break;
-            case 8 : pkg = "4 elves";             break;
-            case 9 : pkg = "2014 Tesla (batteries not included)"; break;
-        }
-        strcpy(gift, pkg);
-    }
-
-    return gift;
-}
 
 /*
  * Description:
@@ -1248,13 +1183,6 @@ int main(int argc, char *argv[])
                         break;
                     case ACTION_SHOW_CONNECTIONS :
                         show_all_connections ();
-                        break;
-                    case ACTION_TRANSPORT :
-                        transport_type = value ? SHIP_REINDEER : SHIP_UPS;
-                        break;
-                    case ACTION_HOHOHO :
-                        char * package = secret_package_selection (value);
-                        send_message (current_endpt, package);
                         break;
                     default :
                     case ACTION_INVALID :

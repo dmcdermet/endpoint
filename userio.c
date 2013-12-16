@@ -134,8 +134,6 @@ int userio_get_command ( int * value, char * buffer, int size )
         case 's':   command = ACTION_SEL_ENDPOINT;      *value = atoi(&buffer[2]);      break;
         case 'z':   command = ACTION_DELAY;             break;
         case 't':   command = ACTION_TEST;              *value = atoi(&buffer[2]);      break;
-        case 'u':   command = ACTION_TRANSPORT;         *value = atoi(&buffer[2]);      break;
-        case '@':   command = ACTION_HOHOHO;            *value = atoi(&buffer[2]);      break;
 
 #ifndef NCURSES_BOOL // these are only used if gui not running
         case 'p':   command = ACTION_SET_PRINT_FLAG;    *value = 0;
